@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@drawable/logo"
+        android:label="@string/app_name"
+        android:roundIcon="@drawable/logo"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BugHouse"
+        tools:targetApi="31">
+        <activity
+            android:name=".TutorDashboardActivity"
+            android:exported="false"
+            android:label="Tutor Dashboard"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".TutorAttendanceLogsActivity"
+            android:exported="false"
+            android:label="Attendance Logs"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".TutorCalendarActivity"
+            android:exported="false"
+            android:label="Calendar"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminRemoveTutorConfirmationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_remove_tutor_confirmation"
+            android:theme="@style/Theme.BugHouse" />
+        <!-- For Android 12+ splash screen control -->
+        <meta-data
+            android:name="android.app.splash_screen_drawable"
+            android:resource="@drawable/splash" /> <!-- Your existing activities -->
+        <activity
+            android:name=".AdminRemoveTutorSummaryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_remove_tutor_summary"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminRemoveTutorActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_remove_tutor"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminAddTutorActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_add_tutor"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".TutorReportConfirmationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tutor_report_confirmation"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".StudentReportConfirmationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_student_report_confirmation"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".TutorReportGenerationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_tutor_report_generation"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".StudentReportGenerationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_student_report_generation"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminAboutActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_about"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminContactUsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_contact_us"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminUpdateProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_update_profile"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminNavigationDrawerContent"
+            android:exported="false"
+            android:label="@string/title_activity_admin_navigation_drawer_content"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminRegistrationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_registration"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AdminDashboardActivity"
+            android:exported="false"
+            android:label="@string/title_activity_admin_dashboard"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".CheckinSummaryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_checkin_summary"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".CheckinActivity"
+            android:exported="false"
+            android:label="@string/title_activity_checkin"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".ReviewSubmissionConfirmationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_review_submission_confirmation"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".ReviewSummaryActivity"
+            android:exported="false"
+            android:label="@string/title_activity_review_summary"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".ReviewActivity"
+            android:exported="false"
+            android:label="@string/title_activity_review"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".BookingConfirmationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_booking_confirmation"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".ConfirmBookingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_confirm_booking"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".BookingActivity"
+            android:exported="false"
+            android:label="@string/title_activity_booking"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".CourseSelectionActivity"
+            android:exported="false"
+            android:label="@string/title_activity_course_selection"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".AboutActivity"
+            android:exported="false"
+            android:label="@string/title_activity_about"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".ContactUsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_contact_us"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".ManageAppointmentsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_manage_appointments"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".YourAppointmentsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_your_appointments"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".NavigationComponents"
+            android:exported="false"
+            android:label="@string/title_activity_navigation_components"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BugHouse"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".UpdateProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_update_profile"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".RegistrationActivity"
+            android:exported="false"
+            android:label="@string/title_activity_registration"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".DashboardActivity"
+            android:exported="false"
+            android:label="@string/title_activity_dashboard"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.BugHouse">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".TutorCheckinActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BugHouse" />
+        <activity
+            android:name=".TutorCheckinSummaryActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BugHouse" />
+    </application>
+
+</manifest>

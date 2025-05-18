@@ -1,0 +1,56 @@
+<resources>
+    <string name="app_name">BugHouse</string>
+    <string name="title_activity_dashboard">DashboardActivity</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_update_profile">UpdateProfileActivity</string>
+    <string name="title_activity_navigation_components">NavigationComponents</string>
+    <string name="title_activity_your_appointments">YourAppointmentsActivity</string>
+    <string name="title_activity_manage_appointments">ManageAppointmentsActivity</string>
+    <string name="title_activity_contact_us">ContactUsActivity</string>
+    <string name="title_activity_about">AboutActivity</string>
+    <string name="title_activity_course_selection">CourseSelectionActivity</string>
+    <string name="title_activity_booking">BookingActivity</string>
+    <string name="title_activity_confirm_booking">ConfirmBookingActivity</string>
+    <string name="title_activity_booking_confirmation">BookingConfirmationActivity</string>
+    <string name="title_activity_review">ReviewActivity</string>
+    <string name="title_activity_review_summary">ReviewSummaryActivity</string>
+    <string name="title_activity_review_submission_confirmation">
+        ReviewSubmissionConfirmationActivity
+    </string>
+    <string name="title_activity_checkin">CheckinActivity</string>
+    <string name="title_activity_checkin_summary">CheckinSummaryActivity</string>
+    <string name="title_activity_admin_dashboard">AdminDashboardActivity</string>
+    <string name="title_activity_admin_registration">AdminRegistrationActivity</string>
+    <string name="title_activity_admin_navigation_drawer_content">AdminNavigationDrawerContent
+    </string>
+    <string name="title_activity_admin_update_profile">AdminUpdateProfileActivity</string>
+    <string name="title_activity_admin_contact_us">AdminContactUsActivity</string>
+    <string name="title_activity_admin_about">AdminAboutActivity</string>
+    <string name="title_activity_student_report_generation">StudentReportGenerationActivity</string>
+    <string name="title_activity_tutor_report_generation">TutorReportGenerationActivity</string>
+    <string name="title_activity_student_report_confirmation">StudentReportConfirmationActivity
+    </string>
+    <string name="title_activity_tutor_report_confirmation">TutorReportConfirmationActivity</string>
+    <string name="title_activity_admin_add_tutor">AdminAddTutorActivity</string>
+    <string name="title_activity_admin_remove_tutor">AdminRemoveTutorActivity</string>
+    <string name="title_activity_admin_remove_tutor_summary">AdminRemoveTutorSummaryActivity
+    </string>
+    <string name="title_activity_admin_remove_tutor_confirmation">
+        AdminRemoveTutorConfirmationActivity
+    </string>
+    <string name="title_activity_admin_tutor_scheduling">AdminTutorSchedulingActivity</string>
+    <string name="title_activity_admin_tutor_schedule_review">AdminTutorScheduleReviewActivity
+    </string>
+    <string name="title_activity_admin_tutor_schedule_management">
+        AdminTutorScheduleManagementActivity
+    </string>
+    <string name="title_activity_admin_manage_tutor">AdminManageTutorActivity</string>
+    <string name="title_activity_admin_tutor_schedule_manager">AdminTutorScheduleManagerActivity
+    </string>
+    <string name="title_activity_admin_edit_tutor_schedule_logic">
+        AdminEditTutorScheduleLogicActivity
+    </string>
+    <string name="title_activity_admin_tutor_schedule_management_review">
+        AdminTutorScheduleManagementReviewActivity
+    </string>
+</resources>

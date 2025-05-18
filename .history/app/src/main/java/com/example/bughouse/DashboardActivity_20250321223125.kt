@@ -1,0 +1,853 @@
+package com.example.bughouse
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import com.example.bughouse.ui.theme.BugHouseTheme
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import com.example.bughouse.models.Appointment
+import com.example.bughouse.models.AppointmentStatus
+
+class DashboardActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            BugHouseTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    DashboardScreen()
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DashboardScreen() {
+    val context = LocalContext.current
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+    var showScheduleDialog by remember { mutableStateOf(false) }
+
+    // Selected day to view appointments
+    var selectedDay by remember { mutableStateOf<Int?>(null) }
+    var showDayAppointmentsDialog by remember { mutableStateOf(false) }
+
+    // Hardcoded appointment data with days matching the current month
+    val appointments = remember {
+        listOf(
+            Appointment("Tutor Past 1", "Cloud Computing", "March 10, 2025", "10:00 AM", 10),
+            Appointment("Tutor Past 3", "System Design", "March 15, 2025", "2:30 PM", 15),
+            Appointment("Tutor Past 4", "Data Science", "March 20, 2025", "11:15 AM", 20),
+            Appointment("Tutor Past 2", "Data Analyst", "March 6, 2025", "9:00 AM", 6),
+            Appointment("Tutor Past 5", "Product Management", "March 24, 2025", "3:45 PM", 24)
+        )
+    }
+    val appointments1 = remember {
+        listOf(
+            Appointment("Tutor 1", "Cloud Computing", "March 10, 2025", "10:00 AM", 10),
+            Appointment("Tutor 3", "System Design", "March 15, 2025", "2:30 PM", 15),
+            Appointment("Tutor 4", "Data Science", "March 20, 2025", "11:15 AM", 20),
+            Appointment("Tutor 2", "Data Analyst", "March 6, 2025", "9:00 AM", 6),
+            Appointment("Tutor 5", "Product Management", "March 24, 2025", "3:45 PM", 24),
+            // Add more appointments for the current month
+            Appointment("Tutor 6", "Machine Learning", "March 18, 2025", "1:00 PM", 18),
+            Appointment("Tutor 7", "Web Development", "March 22, 2025", "11:30 AM", 22),
+            Appointment("Tutor 7(i)", "Web Development Frontend", "March 22, 2025", "11:30 AM", 22),
+            Appointment("Tutor 8", "UI/UX Design", "March 27, 2025", "3:00 PM", 27),
+            Appointment("Tutor 9", "Software Engineering", "March 30, 2025", "10:45 AM", 30),
+            Appointment("Tutor 10", "Database Management", "March 13, 2025", "2:15 PM", 13)
+        )
+    }
+
+    // Get all days that have appointments
+    val daysWithAppointments = remember {
+        appointments1.map { it.dayOfMonth }.distinct()
+    }
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            AppNavigationDrawerContent(
+                onHomeClick = {
+                    // Navigate to DashboardActivity (refresh current screen)
+                    val intent = Intent(context, DashboardActivity::class.java)
+                    context.startActivity(intent)
+                    scope.launch { drawerState.close() }
+                },
+                onProfileClick = {
+                    // Navigate to UpdateProfileActivity
+                    val intent = Intent(context, UpdateProfileActivity::class.java)
+                    context.startActivity(intent)
+                    scope.launch { drawerState.close() }
+                },
+                onAppointmentsClick = {
+                    val intent = Intent(context, YourAppointmentsActivity::class.java)
+                    context.startActivity(intent)
+                    scope.launch { drawerState.close() }
+                },
+                onContactUsClick = {
+                    val intent = Intent(context, ContactUsActivity::class.java)
+                    context.startActivity(intent)
+                    scope.launch { drawerState.close() }
+                },
+                onAboutClick = {
+                    val intent = Intent(context, AboutActivity::class.java)
+                    context.startActivity(intent)
+                    scope.launch { drawerState.close() }
+                },
+                onLogoutClick = {
+                    // Navigate back to login
+                    val intent = Intent(context, MainActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    context.startActivity(intent)
+                    Toast.makeText(context, "Logged out successfully", Toast.LENGTH_SHORT).show()
+                },
+                currentScreen = "Home" // Mark this as the Home screen
+            )
+        },
+        gesturesEnabled = true
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "BugHouse",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 22.sp
+                        )
+                    },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFF0795DD),
+                        titleContentColor = Color.White,
+                        navigationIconContentColor = Color.White
+                    )
+                )
+            },
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = { showScheduleDialog = true },
+                    containerColor = Color(0xFF0795DD),
+                    contentColor = Color.White,
+                    shape = CircleShape
+                ) {
+                    Icon(
+                        Icons.Default.Add,
+                        contentDescription = "Add",
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .pointerInput(Unit) {
+                        detectHorizontalDragGestures { _, dragAmount ->
+                            when {
+                                dragAmount > 50 -> scope.launch {
+                                    if (drawerState.isClosed) drawerState.open()
+                                }
+                                dragAmount < -50 -> scope.launch {
+                                    if (drawerState.isOpen) drawerState.close()
+                                }
+                            }
+                        }
+                    }
+            ) {
+                DashboardContent(
+                    appointments = appointments,
+                    daysWithAppointments = daysWithAppointments,
+                    onManageAppointmentsClick = {
+                        // Navigate to ManageAppointmentsActivity
+                        val intent = Intent(context, ManageAppointmentsActivity::class.java)
+                        context.startActivity(intent)
+                    },
+                    onDayClick = { day ->
+                        selectedDay = day
+                        showDayAppointmentsDialog = true
+                    }
+                )
+            }
+        }
+    }
+
+    // Schedule Appointment Dialog
+    if (showScheduleDialog) {
+        AnimatedVisibility(
+            visible = showScheduleDialog,
+            enter = slideInVertically(
+                initialOffsetY = { it },
+                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+            ),
+            exit = slideOutVertically(
+                targetOffsetY = { it },
+                animationSpec = spring(dampingRatio = Spring.DampingRatioLowBouncy)
+            )
+        ) {
+            Dialog(onDismissRequest = { showScheduleDialog = false }) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Schedule Options",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 24.dp)
+                        )
+
+                        Button(
+                            onClick = {
+                                val intent = Intent(context, CourseSelectionActivity::class.java)
+                                context.startActivity(intent)
+                                showScheduleDialog = false
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0795DD))
+                        ) {
+                            Text(
+                                "Schedule an Appointment",
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+
+                        Button(
+                            onClick = { showScheduleDialog = false },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(56.dp)
+                                .padding(vertical = 8.dp),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
+                        ) {
+                            Text(
+                                "Cancel",
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Day Appointments Dialog - Shows when a day with appointments is clicked
+    if (showDayAppointmentsDialog && selectedDay != null) {
+        val dayAppointments = appointments1.filter { it.dayOfMonth == selectedDay }
+
+        Dialog(onDismissRequest = { showDayAppointmentsDialog = false }) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    // Header with close button
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Appointments on March ${selectedDay}, 2025",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        IconButton(onClick = { showDayAppointmentsDialog = false }) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Close",
+                                tint = Color.Gray
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+                    // List of appointments for this day
+                    if (dayAppointments.isNotEmpty()) {
+                        LazyColumn {
+                            items(dayAppointments) { appointment ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 8.dp)
+                                        .clickable {
+                                            // Navigate to CheckinActivity when appointment is clicked
+                                            val intent = Intent(context, CheckinActivity::class.java).apply {
+                                                putExtra("tutorName", appointment.doctorName)
+                                                putExtra("courseName", appointment.purpose)
+                                                putExtra("appointmentTime", appointment.time)
+                                                putExtra("appointmentDate", appointment.date)
+                                            }
+                                            context.startActivity(intent)
+                                            showDayAppointmentsDialog = false // Close the dialog
+                                        },
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                                    colors = CardDefaults.cardColors(containerColor = Color(0xFFF8FBFE)),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        // Time column with circle background
+                                        Box(
+                                            modifier = Modifier
+                                                .size(60.dp)
+                                                .clip(CircleShape)
+                                                .background(Color(0xFFE6F3FA)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = appointment.time,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color(0xFF0795DD),
+                                                fontSize = 14.sp,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+
+                                        Spacer(modifier = Modifier.width(16.dp))
+
+                                        // Appointment details
+                                        Column {
+                                            Text(
+                                                text = appointment.doctorName,
+                                                fontWeight = FontWeight.Bold,
+                                                fontSize = 16.sp
+                                            )
+                                            Text(
+                                                text = appointment.purpose,
+                                                color = Color.Gray,
+                                                fontSize = 14.sp
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "No appointments for this day",
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DashboardContent(
+    appointments: List<Appointment>,
+    daysWithAppointments: List<Int>,
+    onManageAppointmentsClick: () -> Unit,
+    onDayClick: (Int) -> Unit
+) {
+    val context = LocalContext.current
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        item {
+            // Calendar Section
+            ModernCalendarView(
+                modifier = Modifier.fillMaxWidth(),
+                daysWithAppointments = daysWithAppointments,
+                onDayClick = onDayClick
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Manage Appointments Button with icon
+            Button(
+                onClick = onManageAppointmentsClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0795DD))
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Build,
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    "Manage Appointments",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Upcoming Appointments Section
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DateRange,
+                    contentDescription = null,
+                    tint = Color(0xFF0795DD),
+                    modifier = Modifier.size(24.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "Recent Appointments",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        // Changed to show upcoming appointments only (sorted by date)
+        val upcomingAppointments = appointments.sortedBy { it.dayOfMonth }
+        items(upcomingAppointments) { appointment ->
+            ModernAppointmentCard(
+                appointment = appointment,
+                onClick = { clickedAppointment ->
+                    // Additional actions can be performed here if needed
+                }
+            )
+        }
+    }
+}
+@Composable
+fun ModernCalendarView(
+    modifier: Modifier = Modifier,
+    daysWithAppointments: List<Int>,
+    onDayClick: (Int) -> Unit
+) {
+    // Using Calendar for API level compatibility
+    var calendarInstance = remember { Calendar.getInstance() }
+    val dateFormat = remember { SimpleDateFormat("MMMM yyyy", Locale.getDefault()) }
+
+    // State for current displayed month
+    var currentCalendar by remember { mutableStateOf(calendarInstance) }
+
+    // Current displayed month information
+    val currentMonth = dateFormat.format(currentCalendar.time)
+    val daysInMonth = currentCalendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+    // Get the month and year of the current displayed calendar
+    val displayedMonth = currentCalendar.get(Calendar.MONTH)
+    val displayedYear = currentCalendar.get(Calendar.YEAR)
+
+    // Filter days with appointments based on current displayed month
+    // This is the key fix - we're checking if the current displayed month/year matches March 2025
+    val filteredDaysWithAppointments = remember(displayedMonth, displayedYear) {
+        if (displayedMonth == Calendar.MARCH && displayedYear == 2025) {
+            daysWithAppointments
+        } else {
+            emptyList() // No appointments for other months
+        }
+    }
+
+    // Calculate first day of month
+    val firstDayCalendar = remember(currentCalendar) {
+        (currentCalendar.clone() as Calendar).apply {
+            set(Calendar.DAY_OF_MONTH, 1)
+        }
+    }
+    val firstDayOfWeek = firstDayCalendar.get(Calendar.DAY_OF_WEEK) - 1
+
+    // Current day (highlight only if viewing current month)
+    val today = Calendar.getInstance()
+    val isCurrentMonth = remember(currentCalendar) {
+        currentCalendar.get(Calendar.MONTH) == today.get(Calendar.MONTH) &&
+                currentCalendar.get(Calendar.YEAR) == today.get(Calendar.YEAR)
+    }
+    val currentDay = today.get(Calendar.DAY_OF_MONTH)
+
+    Card(
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+            // Calendar header with navigation buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Previous month button
+                IconButton(
+                    onClick = {
+                        currentCalendar = (currentCalendar.clone() as Calendar).apply {
+                            add(Calendar.MONTH, -1)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Previous Month",
+                        tint = Color(0xFF0795DD)
+                    )
+                }
+
+                // Current month display
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = null,
+                        tint = Color(0xFF0795DD),
+                        modifier = Modifier.size(24.dp)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    Text(
+                        text = currentMonth,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                }
+
+                // Next month button
+                IconButton(
+                    onClick = {
+                        currentCalendar = (currentCalendar.clone() as Calendar).apply {
+                            add(Calendar.MONTH, 1)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Next Month",
+                        tint = Color(0xFF0795DD)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Weekday headers
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa").forEach { day ->
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = day,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Calendar days grid
+            // Calculate starting position for first day of month
+            val startingPos = firstDayOfWeek
+
+            // Generate calendar grid
+            val numRows = (startingPos + daysInMonth + 6) / 7 // Calculate how many rows we need
+            for (row in 0 until numRows) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    for (col in 0 until 7) {
+                        val dayIndex = row * 7 + col - startingPos
+
+                        if (dayIndex < 0 || dayIndex >= daysInMonth) {
+                            // Empty cell for days outside current month
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                // Empty space
+                            }
+                        } else {
+                            val day = dayIndex + 1
+                            val isToday = isCurrentMonth && day == currentDay
+
+                            // Use the filtered appointments list based on current displayed month
+                            val hasAppointment = filteredDaysWithAppointments.contains(day)
+
+                            // Determine background color
+                            val backgroundColor = when {
+                                isToday -> Color(0xFF0795DD)
+                                hasAppointment -> Color(0xFFD1ECFF) // Light blue for days with appointments
+                                else -> Color.Transparent
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .padding(4.dp)
+                                    .clip(CircleShape)
+                                    .background(backgroundColor)
+                                    .clickable {
+                                        if (hasAppointment) {
+                                            onDayClick(day)
+                                        }
+                                    },
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = day.toString(),
+                                    color = if (isToday) Color.White else Color.Black,
+                                    fontWeight = if (isToday || hasAppointment) FontWeight.Bold else FontWeight.Normal,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Today button
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(
+                onClick = {
+                    currentCalendar = Calendar.getInstance()
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = "Today",
+                    color = Color(0xFF0795DD),
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
+    }
+}
+@Composable
+fun ModernAppointmentCard(
+    appointment: Appointment,
+    onClick: (Appointment) -> Unit = {} // Default empty function if not provided
+) {
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .clickable {
+                // Navigate to ReviewActivity when past appointment is clicked
+                val intent = Intent(context, ReviewActivity::class.java).apply {
+                    putExtra("tutorName", appointment.doctorName)
+                    putExtra("courseName", appointment.purpose)
+                    putExtra("appointmentTime", appointment.time)
+                    putExtra("appointmentDate", appointment.date)
+                }
+                context.startActivity(intent)
+
+                // Also call the provided onClick function
+                onClick(appointment)
+            },
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        shape = RoundedCornerShape(12.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Time column with circle background
+            Column(
+                modifier = Modifier.width(80.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFFE6F3FA)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = appointment.time,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF0795DD),
+                            fontSize = 14.sp
+                        )
+                        Text(
+                            text = "March ${appointment.dayOfMonth}",
+                            fontSize = 12.sp,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Appointment details
+            Column {
+                Text(
+                    text = appointment.doctorName,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Text(
+                    text = appointment.purpose,
+                    color = Color.Gray,
+                    fontSize = 16.sp
+                )
+                Text(
+                    text = appointment.date,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+}
